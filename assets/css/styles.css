@@ -317,6 +317,69 @@ body.drawer-open { overflow: hidden; }
 
 .cap-meta { color: var(--muted); font-family: var(--display); font-size: 10px; letter-spacing: 0.18em; }
 
+/* ---------- slideshow arrows ----------
+   Present and clickable from the start, invisible until the pointer is on that
+   particular disc or focus lands on it: each one pops out alone, Apple style, as
+   a rounded frosted-glass disc with no border, ring or rim of any kind.
+   `translate`/`scale` are used instead of `transform` so the centring offset and
+   the pop never fight each other, and both stay on the compositor. */
+
+.showcase .slide-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  width: clamp(46px, 4.6vw, 58px);
+  height: clamp(46px, 4.6vw, 58px);
+  padding: 0;
+  border-radius: 50%;
+  color: #fff;
+  translate: 0 -50%;
+  scale: 0.86;
+  opacity: 0;
+  background: rgba(16, 16, 18, 0.24);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  border: 0;
+  box-shadow: 0 10px 26px -16px rgba(0, 0, 0, 0.55);
+  transition:
+    opacity 0.4s var(--ease),
+    scale 0.46s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.3s var(--ease);
+  will-change: opacity, scale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.showcase .slide-nav.prev { left: clamp(10px, 2vw, 26px); }
+.showcase .slide-nav.next { right: clamp(10px, 2vw, 26px); }
+
+.slide-nav svg {
+  width: 42%;
+  height: 42%;
+  overflow: visible;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+  transition: translate 0.36s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* the half of the slideshow the pointer is in decides which disc surfaces:
+   left half → left arrow, right half → right arrow, never both at once.
+   Keyboard focus surfaces just the one being focused. main.js sets the classes. */
+.showcase.show-left .slide-nav.prev,
+.showcase.show-right .slide-nav.next,
+.showcase .slide-nav:focus-visible {
+  opacity: 1;
+  scale: 1.06;
+  background: rgba(16, 16, 18, 0.32);
+}
+
+/* no ring of any kind: focus is shown by that disc surfacing on its own */
+.showcase .slide-nav:focus-visible { outline: none; }
+
+.showcase .slide-nav:active { scale: 0.96; }
+.showcase.show-right .slide-nav.next svg { translate: 2px 0; }
+.showcase.show-left .slide-nav.prev svg { translate: -2px 0; }
+
 /* ---------- inner page head ---------- */
 
 .page-head {
@@ -716,4 +779,10 @@ form.bookings { margin-top: 26px; display: grid; gap: 18px; }
   html { scroll-behavior: auto; }
   .slide, .slide-media, .tile img { transition: none; }
   .slide-media { transform: none; }
+  .showcase .slide-nav { transition: opacity 0.2s linear; scale: 1; }
+  .showcase.show-left .slide-nav.prev,
+  .showcase.show-right .slide-nav.next,
+  .showcase .slide-nav:focus-visible,
+  .showcase .slide-nav:active { scale: 1; }
+  .slide-nav svg { transition: none; }
 }
