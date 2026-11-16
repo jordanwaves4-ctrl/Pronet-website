@@ -1,0 +1,6 @@
+# local dev server + app runtime
+.server.log
+*.log
+.freebuff/
+.cloud-attachments/
+threads/
