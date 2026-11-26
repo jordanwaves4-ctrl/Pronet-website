@@ -2,13 +2,14 @@
  * Generates the programme fieldwork pages.
  * Run: node tools/build-galleries.mjs
  *
- * Photographs live in assets/img/work/<slug>/ as WebP at 480, 800 and 1200 px
- * wide (team portraits: 320, 480, 880). Each programme's `images` array holds
- * the alt text for those files, in order; the page count comes from its length.
+ * Photographs live in assets/img/work/<slug>/ as WebP at 640 and 1200 px wide
+ * (team portraits: 480 and 880) — one cut for phones, one for retina and the
+ * lightbox. Each programme's `images` array holds the alt text for those files,
+ * in order; the page count comes from its length.
  */
 import { writeFileSync, unlinkSync, existsSync } from "node:fs";
 
-const WIDTHS = [480, 800, 1200];
+const WIDTHS = [640, 1200];
 
 const photo = (slug, i, width) =>
   `assets/img/work/${slug}/${String(i + 1).padStart(2, "0")}-${width}.webp`;
@@ -243,7 +244,7 @@ ${p.images
   .map((alt, i) => {
     const src = (w) => photo(p.slug, i, w);
     return `    <a class="tile" href="${src(1200)}" data-full="${src(1200)}" aria-label="Open photograph ${i + 1}">
-      <img src="${src(800)}"
+      <img src="${src(640)}"
            srcset="${srcset(p.slug, i)}"
            sizes="(min-width: 900px) 33vw, 50vw"
            width="1248" height="832"
