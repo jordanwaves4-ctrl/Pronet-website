@@ -350,10 +350,9 @@ body.drawer-open { overflow: hidden; }
   box-shadow: 0 10px 26px -16px rgba(0, 0, 0, 0.55);
   transition:
     opacity 0.36s var(--ease),
-    translate 0.5s var(--ease),
     scale 0.5s var(--ease),
     background 0.3s var(--ease);
-  will-change: opacity, translate, scale;
+  will-change: opacity, scale;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -362,9 +361,8 @@ body.drawer-open { overflow: hidden; }
   .showcase .slide-nav { background: rgba(16, 16, 18, 0.55); }
 }
 
-/* parked just outside its edge, so the reveal slides in from the screen edge */
-.showcase .slide-nav.prev { left: clamp(10px, 2vw, 26px); translate: -12px -50%; }
-.showcase .slide-nav.next { right: clamp(10px, 2vw, 26px); translate: 12px -50%; }
+.showcase .slide-nav.prev { left: clamp(10px, 2vw, 26px); }
+.showcase .slide-nav.next { right: clamp(10px, 2vw, 26px); }
 
 .slide-nav svg {
   width: 42%;
@@ -382,7 +380,6 @@ body.drawer-open { overflow: hidden; }
 .showcase .slide-nav:focus-visible {
   opacity: 1;
   scale: 1.06;
-  translate: 0 -50%;
   background: rgba(16, 16, 18, 0.32);
 }
 
@@ -826,11 +823,9 @@ form.bookings { margin-top: 26px; display: grid; gap: 18px; }
   .slide, .slide-media, .tile img { transition: none; }
   .slide-media { transform: none; }
   .showcase .slide-nav { transition: opacity 0.2s linear; scale: 1; }
-  .showcase .slide-nav.prev,
-  .showcase .slide-nav.next,
   .showcase.show-left .slide-nav.prev,
   .showcase.show-right .slide-nav.next,
   .showcase .slide-nav:focus-visible,
-  .showcase .slide-nav:active { scale: 1; translate: 0 -50%; }
+  .showcase .slide-nav:active { scale: 1; }
   .slide-nav svg { animation: none; }
 }
