@@ -286,16 +286,16 @@ body.drawer-open { overflow: hidden; }
 .slide-media {
   position: absolute;
   inset: 0;
-  background-image: var(--img);
-  background-size: cover;
-  background-position: center;
+  background: #111;
+  overflow: hidden;
   transform: scale(1.03);
   transition: transform 8s linear;
 }
-
-/* phones take the 800px cut of the same photograph, not the desktop one */
-@media (max-width: 760px) {
-  .slide-media { background-image: var(--img-sm, var(--img)); }
+.slide-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .slide.is-active .slide-media { transform: scale(1); }
 
@@ -795,6 +795,7 @@ form.bookings { margin-top: 26px; display: grid; gap: 18px; }
 .member { margin: 0; }
 .member img {
   width: 100%;
+  height: auto;
   aspect-ratio: 3 / 4;
   object-fit: cover;
   background: #e8e4df;
