@@ -53,6 +53,10 @@ The other seven pages are hand-written and safe to edit directly: `index.html`,
   is the only nav item coloured with it.
 - `assets/img/pronet-logo.png` is transparent by design (967 × 507) and floats
   over the hero — do not put a background behind it.
+- The stylesheet and script are linked as `assets/css/styles.css?v=3` and
+  `assets/js/main.js?v=3`. Bump that number in every page *and* the generator
+  whenever either file changes: GitHub Pages caches assets for ten minutes, so
+  without a new URL returning visitors keep running the old file.
 
 ## Publishing
 
