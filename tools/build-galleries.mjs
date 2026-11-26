@@ -155,7 +155,7 @@ const programmes = [
   }
 ];
 
-const LOGO_MARK = `<img class="brand-logo" src="assets/img/pronet-logo.png" alt="ProNet" width="967" height="507">`;
+const LOGO_MARK = `<img class="brand-logo" src="assets/img/pronet-logo.png" alt="ProNet" width="320" height="168">`;
 
 const drawer = (current) => `
 <div class="drawer" id="drawer" data-drawer data-open="false" aria-hidden="true" aria-label="Site menu">
