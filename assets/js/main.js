@@ -78,38 +78,72 @@
       else if (e.key === "ArrowLeft") { e.preventDefault(); step(-1); }
     });
 
-    /* which half of the slideshow the pointer sits in decides which arrow shows:
-       left half reveals the previous arrow, right half the next one, never both */
+    /* the arrows live in the edges of the photo, so they only surface when the
+       pointer is inside an edge band — the left band reveals the previous
+       arrow, the right band the next one, and the middle reveals neither */
+    var box = null;
+    var pendingX = null;
+    var frame = 0;
+
+    function measure() { box = showcase.getBoundingClientRect(); }
+
     function showSide(clientX) {
-      var box = showcase.getBoundingClientRect();
-      var onLeft = clientX < box.left + box.width / 2;
-      showcase.classList.toggle("show-left", onLeft);
-      showcase.classList.toggle("show-right", !onLeft);
+      if (!box) measure();
+      var band = Math.max(64, Math.min(140, box.width * 0.12));
+      var fromLeft = clientX - box.left;
+      var fromRight = box.left + box.width - clientX;
+      showcase.classList.toggle("show-left", fromLeft >= 0 && fromLeft <= band);
+      showcase.classList.toggle("show-right", fromRight >= 0 && fromRight <= band);
+    }
+
+    /* fold pointer samples into one update per painted frame, so a busy mouse
+       or a low-end machine never queues work faster than the screen shows it */
+    function track(clientX) {
+      pendingX = clientX;
+      if (frame) return;
+      frame = window.requestAnimationFrame(function () {
+        frame = 0;
+        if (pendingX === null) return;
+        showSide(pendingX);
+        pendingX = null;
+      });
     }
 
     function clearSide() {
+      if (frame) { window.cancelAnimationFrame(frame); frame = 0; }
+      pendingX = null;
       showcase.classList.remove("show-left", "show-right");
     }
 
-    showcase.addEventListener("pointermove", function (e) {
-      if (e.pointerType === "touch") return;
-      showSide(e.clientX);
-    });
-    showcase.addEventListener("pointerdown", function (e) { showSide(e.clientX); });
-    showcase.addEventListener("pointerleave", clearSide);
-    showcase.addEventListener("pointercancel", clearSide);
+    window.addEventListener("resize", measure);
+    window.addEventListener("orientationchange", measure);
 
-    /* pause while someone is looking at a slide (mouse only, not touch) */
     showcase.addEventListener("pointerenter", function (e) {
       if (e.pointerType !== "mouse") return;
+      measure();
+      track(e.clientX);
+      /* pause while someone is examining a slide */
       hovering = true;
       stop();
     });
+    showcase.addEventListener("pointermove", function (e) {
+      if (e.pointerType === "touch") return;
+      track(e.clientX);
+    });
+    showcase.addEventListener("pointerdown", function (e) {
+      measure();
+      showSide(e.clientX);
+    });
+    showcase.addEventListener("pointerup", function (e) {
+      if (e.pointerType === "touch") clearSide();
+    });
     showcase.addEventListener("pointerleave", function (e) {
+      clearSide();
       if (e.pointerType !== "mouse") return;
       hovering = false;
       start();
     });
+    showcase.addEventListener("pointercancel", clearSide);
 
     show(0);
     start();

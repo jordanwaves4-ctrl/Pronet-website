@@ -292,6 +292,11 @@ body.drawer-open { overflow: hidden; }
   transform: scale(1.03);
   transition: transform 8s linear;
 }
+
+/* phones take the 800px cut of the same photograph, not the desktop one */
+@media (max-width: 760px) {
+  .slide-media { background-image: var(--img-sm, var(--img)); }
+}
 .slide.is-active .slide-media { transform: scale(1); }
 
 .slide-hit { position: absolute; inset: 0; }
@@ -339,46 +344,67 @@ body.drawer-open { overflow: hidden; }
   scale: 0.86;
   opacity: 0;
   background: rgba(16, 16, 18, 0.24);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(145%);
+  backdrop-filter: blur(12px) saturate(145%);
   border: 0;
   box-shadow: 0 10px 26px -16px rgba(0, 0, 0, 0.55);
   transition:
-    opacity 0.4s var(--ease),
-    scale 0.46s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.36s var(--ease),
+    translate 0.5s var(--ease),
+    scale 0.5s var(--ease),
     background 0.3s var(--ease);
-  will-change: opacity, scale;
+  will-change: opacity, translate, scale;
   -webkit-tap-highlight-color: transparent;
 }
 
-.showcase .slide-nav.prev { left: clamp(10px, 2vw, 26px); }
-.showcase .slide-nav.next { right: clamp(10px, 2vw, 26px); }
+/* no glass support: keep the disc solid enough for the glyph to stay legible */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .showcase .slide-nav { background: rgba(16, 16, 18, 0.55); }
+}
+
+/* parked just outside its edge, so the reveal slides in from the screen edge */
+.showcase .slide-nav.prev { left: clamp(10px, 2vw, 26px); translate: -12px -50%; }
+.showcase .slide-nav.next { right: clamp(10px, 2vw, 26px); translate: 12px -50%; }
 
 .slide-nav svg {
   width: 42%;
   height: 42%;
   overflow: visible;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
-  transition: translate 0.36s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: translate;
 }
 
-/* the half of the slideshow the pointer is in decides which disc surfaces:
-   left half → left arrow, right half → right arrow, never both at once.
+/* the edge band the pointer is in decides which disc surfaces: inside the left
+   band → left arrow, inside the right band → right arrow, the middle → neither.
    Keyboard focus surfaces just the one being focused. main.js sets the classes. */
 .showcase.show-left .slide-nav.prev,
 .showcase.show-right .slide-nav.next,
 .showcase .slide-nav:focus-visible {
   opacity: 1;
   scale: 1.06;
+  translate: 0 -50%;
   background: rgba(16, 16, 18, 0.32);
 }
 
 /* no ring of any kind: focus is shown by that disc surfacing on its own */
 .showcase .slide-nav:focus-visible { outline: none; }
 
-.showcase .slide-nav:active { scale: 0.96; }
-.showcase.show-right .slide-nav.next svg { translate: 2px 0; }
-.showcase.show-left .slide-nav.prev svg { translate: -2px 0; }
+.showcase .slide-nav:active { scale: 0.97; }
+
+/* the glyph gives a small push toward its direction as the disc surfaces,
+   then settles back to dead centre — it never rests off-centre */
+@keyframes nav-nudge-left {
+  0% { translate: 0 0; }
+  45% { translate: -3px 0; }
+  100% { translate: 0 0; }
+}
+@keyframes nav-nudge-right {
+  0% { translate: 0 0; }
+  45% { translate: 3px 0; }
+  100% { translate: 0 0; }
+}
+.showcase.show-left .slide-nav.prev svg { animation: nav-nudge-left 0.55s var(--ease) both; }
+.showcase.show-right .slide-nav.next svg { animation: nav-nudge-right 0.55s var(--ease) both; }
 
 /* ---------- inner page head ---------- */
 
@@ -760,6 +786,25 @@ form.bookings { margin-top: 26px; display: grid; gap: 18px; }
 .dept p { color: var(--muted); font-size: 13px; margin: 0; }
 .dept .which { font-family: var(--display); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 14px; }
 
+/* ---------- people ---------- */
+.team {
+  display: grid;
+  gap: clamp(18px, 2.4vw, 28px);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.member { margin: 0; }
+.member img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  background: #e8e4df;
+  filter: saturate(0.92);
+}
+.member figcaption { display: flex; flex-direction: column; margin-top: 12px; }
+.member strong { font-family: var(--display); font-weight: 400; font-size: 15px; line-height: 1.3; }
+.member span { margin-top: 4px; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.member p { margin: 9px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+
 .band { display: grid; grid-template-columns: 1fr; background: var(--paper-warm); }
 @media (min-width: 860px) { .band { grid-template-columns: 1fr 1fr; } }
 .band-media { min-height: 42vh; background: #e8e4df; }
@@ -780,9 +825,11 @@ form.bookings { margin-top: 26px; display: grid; gap: 18px; }
   .slide, .slide-media, .tile img { transition: none; }
   .slide-media { transform: none; }
   .showcase .slide-nav { transition: opacity 0.2s linear; scale: 1; }
+  .showcase .slide-nav.prev,
+  .showcase .slide-nav.next,
   .showcase.show-left .slide-nav.prev,
   .showcase.show-right .slide-nav.next,
   .showcase .slide-nav:focus-visible,
-  .showcase .slide-nav:active { scale: 1; }
-  .slide-nav svg { transition: none; }
+  .showcase .slide-nav:active { scale: 1; translate: 0 -50%; }
+  .slide-nav svg { animation: none; }
 }
