@@ -247,7 +247,7 @@ ${p.images
       <img src="${src(640)}"
            srcset="${srcset(p.slug, i)}"
            sizes="(min-width: 900px) 33vw, 50vw"
-           width="1248" height="832"
+           width="1200" height="800"
            alt="${alt}"
            loading="${i === 0 ? "eager" : "lazy"}"${i === 0 ? ' fetchpriority="high"' : ""} decoding="async">
       <span class="tile-plus" aria-hidden="true">+</span>
